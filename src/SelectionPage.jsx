@@ -5,7 +5,7 @@ const score = value => value === null ? 'Pendent' : new Intl.NumberFormat('ca', 
 const euros = value => new Intl.NumberFormat('ca', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 const files = [
   ['RFP-Odoo-i-Business-Central.xlsx', 'RFP i respostes dels dos proveïdors', 'Excel amb un full per ERP'],
-  ['Matriu-avaluacio-ERP.xlsx', 'Matriu ponderada i criteris generals', 'Excel amb pesos, fórmules i justificacions'],
+  ['Matriu-avaluacio-ERP.xlsx', 'Matriu d’avaluació ERP', 'Excel amb les sis pestanyes de la plantilla, la comparativa i la matriu simplificada'],
   ['Seleccio-GAP-Ceramica-Riu-Sec.pdf', 'Informe de selecció, GAP i parametrització', 'PDF amb les onze històries, proves i fonts'],
 ]
 
