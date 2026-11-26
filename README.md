@@ -45,7 +45,7 @@ npm run preview
 
 ## Publicació
 
-El projecte compila amb la base `/Consultoria-ERP-1046-v01/`. `npm run export` copia a l'arrel els fitxers que GitHub Pages serveix des de `main`:
+El projecte compila amb la base `/Consultoria-ERP-1046-v03/`. `npm run export` copia a l'arrel els fitxers que GitHub Pages serveix des de `main`:
 
 ```bash
 npm run export
@@ -54,4 +54,4 @@ git commit -m "Actualitza la versió 1"
 git push origin main
 ```
 
-Cal configurar GitHub Pages amb la branca `main` i la carpeta `/ (root)` una sola vegada. L'adreça pública és [carlesmarti2003.github.io/Consultoria-ERP-1046-v01](https://carlesmarti2003.github.io/Consultoria-ERP-1046-v01/).
+Cal configurar GitHub Pages amb la branca `main` i la carpeta `/ (root)` una sola vegada. L'adreça pública és [carlesmarti2003.github.io/Consultoria-ERP-1046-v03](https://carlesmarti2003.github.io/Consultoria-ERP-1046-v03/).
