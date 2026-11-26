@@ -76,6 +76,11 @@ export function ProjectOverview() {
 
   return <>
     <PageIntro label="Indústria ceràmica · Onda" title={clientLogo}>Fabricant de taulells amb 64 persones. El projecte analitza com coordinar l’aprovisionament de matèries primeres.</PageIntro>
+    <section className="section-space wrap case-brief">
+      <article><h2>El repte</h2><p>Els correus i fulls separats dificulten conéixer l’estoc real i provoquen compres urgents i avisos tardans.</p></article>
+      <article><h2>L’objectiu</h2><p>Tindre el material a temps i compartir la informació entre producció, compres, magatzem i qualitat.</p></article>
+      <article id="abast"><h2>L’abast</h2><p>De la necessitat de producció al registre del material acceptat. La fabricació i el pagament queden fora.</p></article>
+    </section>
     <section className="section-space wrap">
       <h2>Explora el projecte</h2>
       <ul className="project-index" role="list">{projectNavigation.slice(1).map((item) => <li key={item.page}>
@@ -83,11 +88,5 @@ export function ProjectOverview() {
         <p>{item.description}</p>
       </li>)}</ul>
     </section>
-    <section className="section-space wrap case-brief">
-      <article><h2>El repte</h2><p>Els correus i fulls separats dificulten conéixer l’estoc real i provoquen compres urgents i avisos tardans.</p></article>
-      <article><h2>L’objectiu</h2><p>Tindre el material a temps i compartir la informació entre producció, compres, magatzem i qualitat.</p></article>
-      <article id="abast"><h2>L’abast</h2><p>De la necessitat de producció al registre del material acceptat. La fabricació i el pagament queden fora.</p></article>
-    </section>
-    <p className="project-status wrap"><strong>Projecte en curs.</strong> Millores proposades, pendents d’implantació.</p>
   </>
 }

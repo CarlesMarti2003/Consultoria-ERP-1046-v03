@@ -137,8 +137,7 @@ dd { margin: .3rem 0 0; }
 .project-facts > div + div { margin-top: .85rem; }
 .project-facts dt { font-size: .8rem; }
 .project-facts dd { color: var(--color-muted); font-size: .95rem; }
-.project-status { background: var(--color-soft); border-inline-start: 2px solid var(--color-accent); padding: 1rem 1.25rem; font-size: .9rem; }
-.case-brief { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; border-top: 1px solid var(--color-line); }
+.case-brief { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; border-bottom: 1px solid var(--color-line); }
 .case-brief h2 { font-size: 1.5rem; }
 .case-brief p { color: var(--color-muted); margin-top: .7rem; }
 .process-step-action strong { color: var(--color-ink); font-weight: 500; }
