@@ -4,8 +4,10 @@ import { costTotals, fit, parameters, result, resultRows, scenario, sources, ven
 const score = value => value === null ? 'Pendent' : new Intl.NumberFormat('ca', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)
 const euros = value => new Intl.NumberFormat('ca', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 const files = [
-  ['RFP-Odoo-i-Business-Central.xlsx', 'RFP i respostes dels dos proveïdors', 'Excel amb un full per ERP'],
-  ['Matriu-avaluacio-ERP.xlsx', 'Matriu d’avaluació ERP', 'Excel amb les sis pestanyes de la plantilla, la comparativa i la matriu simplificada'],
+  ['RFP-Odoo.xlsx', 'RFP d’Odoo', 'Excel editable amb la resposta simulada'],
+  ['RFP-Business-Central.xlsx', 'RFP de Business Central', 'Excel editable amb la resposta simulada'],
+  ['Matriu-avaluacio-ERP.xlsx', 'Matriu d’avaluació ERP', 'Comparativa ponderada amb les sis pestanyes de la plantilla'],
+  ['Matriu-simplificada-ERP.xlsx', 'Matriu simplificada de criteris generals', 'Tres criteris per bloc amb pesos i valoracions'],
   ['Seleccio-GAP-Ceramica-Riu-Sec.pdf', 'Informe de selecció, GAP i parametrització', 'PDF amb les onze històries, proves i fonts'],
 ]
 
