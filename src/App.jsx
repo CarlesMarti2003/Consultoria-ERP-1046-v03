@@ -1,3 +1,4 @@
+import { SelectionPage } from './SelectionPage.jsx'
 import { useEffect, useRef, useState } from 'react'
 import { caseStudies, team } from './content.js'
 import { ImprovementPage, ProcessPage, RequirementsPage } from './Practice4.jsx'
@@ -19,6 +20,7 @@ const titles = {
   analisi: 'Problemes detectats',
   millora: 'Proposta de millora',
   requisits: 'Requisits ERP',
+  seleccio: 'Selecció ERP',
   consultora: 'Equip',
   contacte: 'Contacte',
   privacitat: 'Privacitat',
@@ -297,6 +299,7 @@ export default function App() {
     {page === 'proces' && <ProcessPage />}
     {page === 'millora' && <ImprovementPage />}
     {page === 'requisits' && <RequirementsPage />}
+    {page === 'seleccio' && <SelectionPage />}
     {page === 'documents' && <Documents />}
     {page === 'consultora' && <Consultancy />}
     {page === 'contacte' && <Contact />}

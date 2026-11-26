@@ -14,6 +14,7 @@ const projectPages = [
   { page: 'analisi', label: 'Problemes detectats', href: projectBase + '/analisi', description: 'Diagnòstic, decisions i conseqüències de cada activitat.' },
   { page: 'millora', label: 'Proposta de millora', href: projectBase + '/millora', description: 'Millores principals i model TO-BE.' },
   { page: 'requisits', label: 'Requisits ERP', href: projectBase + '/requisits', description: 'Històries d’usuari i dades necessàries per avaluar l’ERP.' },
+  { page: 'seleccio', label: 'Selecció ERP', href: projectBase + '/seleccio-erp', description: 'Comparativa, anàlisi GAP i parametrització.' },
   { page: 'documents', label: 'Documents i fonts', href: projectBase + '/documents', description: 'Models BPMN, presentació i referències de consulta.' },
 ]
 export const projectNavigation = projectPages.filter((page) => !['empresa','analisi'].includes(page.page) && isProjectPagePublished(page.page))

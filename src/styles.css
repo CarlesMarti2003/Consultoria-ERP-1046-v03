@@ -246,3 +246,24 @@ details[open] > summary > span[aria-hidden] { transform: rotate(45deg); }
 .contact-form .field-error { color: #941e24; font-size: .9rem; margin-top: .25rem; }
 .contact-form [aria-invalid="true"] { border-color: #941e24; }
 .contact-result:not(:empty) { padding: .65rem .8rem; background: var(--color-soft); border-left: 3px solid var(--color-ink); }
+
+.selection-result {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1.5rem;
+  margin: 0;
+}
+.selection-result > div { padding: 1rem 0; border-block: 1px solid var(--color-line); }
+.selection-result dt { font-weight: 600; }
+.selection-result dd:nth-of-type(1) { font-size: 2rem; line-height: 1.3; }
+.selection-result span { font-size: .95rem; color: var(--color-muted); }
+.selection-result dd:last-child,.selection-note { color: var(--color-muted); }
+.selection-note { margin-top: 1rem; font-size: .9rem; }
+.selection-section { border-top: 1px solid var(--color-line); }
+.selection-list { padding: 0; list-style: none; margin: 0; }
+.selection-list li { padding-block: 1rem; border-top: 1px solid var(--color-line); }
+.selection-list h3 span { color: var(--color-muted); font-size: .8rem; margin-inline-start: .35rem; }
+.selection-list p { color: var(--color-muted); margin-top: .5rem; }
+.selection-table { width: 100%; min-width: 26rem; border-collapse: collapse; font-size: .9rem; }
+.selection-table :is(th,td) { text-align: left; padding: .65rem; border-bottom: 1px solid var(--color-line); }
+.selection-table thead { background: var(--color-soft); }

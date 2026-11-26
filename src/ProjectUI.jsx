@@ -51,7 +51,7 @@ export function Sources() {
     <li><a href="https://www.omg.org/spec/BPMN/2.0/" target="_blank" rel="noopener noreferrer">OMG · BPMN 2.0 ↗</a><p>Notació utilitzada en els models de procés.</p></li>
     <li><a href="https://tallyfy.com/business-process-improvement-ideas/" target="_blank" rel="noopener noreferrer">Tallyfy · Millora de processos ↗</a><p>Categories que orienten les propostes de millora.</p></li>
     <li><a href="https://www.atlassian.com/es/agile/project-management/user-stories" target="_blank" rel="noopener noreferrer">Atlassian · Històries d’usuari ↗</a><p>Estructura de les necessitats dels participants.</p></li>
-    <li><a href="https://learn.microsoft.com/en-us/dynamics365/business-central/setup-best-practices-planning-parameters" target="_blank" rel="noopener noreferrer">Microsoft · Paràmetres de planificació ↗</a><p>Referència funcional sobre reserves i reposició. L’ERP encara no està seleccionat.</p></li>
+    <li><a href="https://learn.microsoft.com/en-us/dynamics365/business-central/setup-best-practices-planning-parameters" target="_blank" rel="noopener noreferrer">Microsoft · Paràmetres de planificació ↗</a><p>Referència funcional sobre reserves i reposició. Font consultada en la comparativa de productes.</p></li>
   </ul></div></section>
 }
 export function Documents() {
