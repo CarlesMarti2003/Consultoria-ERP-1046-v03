@@ -4,7 +4,7 @@ import { caseStudies, team } from './content.js'
 import { ImprovementPage, ProcessPage, RequirementsPage } from './Practice4.jsx'
 
 import { mainNavigation as navigation, projectNavigation as caseNavigation, legalNavigation as footerNavigation, readRoute, projectBase } from './navigation.js'
-import { Documents, PageIntro, ProjectMenu, ProjectOverview, ProjectPager } from './ProjectUI.jsx'
+import { PageIntro, ProjectBreadcrumbs, ProjectMenu, ProjectOverview, ProjectPager } from './ProjectUI.jsx'
 
 const asset = (file) => import.meta.env.BASE_URL + 'images/' + file
 
@@ -13,11 +13,8 @@ const titles = {
   casos: 'Projectes',
   serveis: 'Serveis',
   projecte: 'El projecte',
-  documents: 'Documents i fonts',
   notfound: 'Pàgina no trobada',
-  empresa: 'Empresa',
   proces: 'Procés actual',
-  analisi: 'Problemes detectats',
   millora: 'Proposta de millora',
   requisits: 'Requisits ERP',
   seleccio: 'Selecció ERP',
@@ -46,19 +43,6 @@ function Header({ page }) {
     heading?.scrollIntoView({ block: 'start' })
   }
 
-  const links = navigation.map((item) => (
-    <a key={item.page} href={item.href}
-      aria-current={page === item.page ? 'page' : item.page === 'casos' && isProject ? 'location' : undefined}
-      onClick={() => {
-        if (menuOpen && item.href === window.location.hash) {
-          setMenuOpen(false)
-          menuButton.current?.focus()
-        }
-      }}>
-      {item.label}
-    </a>
-  ))
-
   return <header className="site-header" onKeyDown={(event) => {
     if (event.key === 'Escape' && menuOpen) {
       setMenuOpen(false)
@@ -70,11 +54,25 @@ function Header({ page }) {
       <a className="brand" href="#/" aria-label="Nexe Consultoria ERP, tornar a l’inici">
         <img src={asset('nexe-logo.svg')} alt="" width="1200" height="420" />
       </a>
-      <nav className="desktop-nav" aria-label="Navegació principal">{links}</nav>
       <button ref={menuButton} type="button" className="menu-button" aria-expanded={menuOpen}
-        aria-controls="mobile-nav" onClick={() => setMenuOpen(!menuOpen)}>Menú <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span></button>
+        aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>
+        {menuOpen ? 'Tancar menú' : 'Menú'} <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+      </button>
+      <nav id="main-navigation" className="main-navigation" aria-label="Navegació principal" data-open={menuOpen}>
+        <ul role="list">{navigation.map((item) => <li key={item.page}>
+          <a href={item.href}
+            aria-current={page === item.page ? 'page' : item.page === 'casos' && isProject ? 'location' : undefined}
+            onClick={() => {
+              if (menuOpen && item.href === window.location.hash) {
+                setMenuOpen(false)
+                menuButton.current?.focus()
+              }
+            }}>
+            {item.label}
+          </a>
+        </li>)}</ul>
+      </nav>
     </div>
-    <nav id="mobile-nav" className="mobile-nav wrap" aria-label="Navegació principal" hidden={!menuOpen}>{links}</nav>
   </header>
 }
 
@@ -95,7 +93,7 @@ function Home() {
     </section>
     <section className="section-space home-featured">
       <div className="wrap home-featured-grid">
-        <div><p className="page-label">Projecte en curs</p><h2>Ceràmica Riu Sec</h2><p>Revisem l’aprovisionament de matèries primeres d’un fabricant de taulells d’Onda, des del pla de fabricació fins al registre del material acceptat.</p></div>
+        <div><p className="page-label">Projecte en curs</p><h2><a href={projectBase}>Ceràmica Riu Sec</a></h2><p>Revisem l’aprovisionament de matèries primeres d’un fabricant de taulells d’Onda, des del pla de fabricació fins al registre del material acceptat.</p></div>
         <dl>
           <div><dt>Equips implicats</dt><dd>Producció, compres, magatzem i qualitat.</dd></div>
           <div><dt>Objectiu</dt><dd>Disposar de material a temps i d’un estoc fiable.</dd></div>
@@ -104,7 +102,7 @@ function Home() {
     </section>
     <section className="section-space home-offering">
       <div className="wrap">
-        <h2 className="section-heading-row">En què podem ajudar-te</h2>
+        <div className="home-section-heading"><h2>En què podem ajudar-te</h2><a className="text-link" href="#/serveis">Veure tots els serveis</a></div>
         <div className="home-offering-grid">{serviceOfferings.map((item) => <article key={item.title}><h3>{item.title}</h3><p>{item.result}</p></article>)}</div>
       </div>
     </section>
@@ -134,7 +132,7 @@ function Cases() {
       <div className="wrap case-list">{caseStudies.map((item) => <article className="client-case" key={item.slug}>
         <div className="client-case-copy">
           <p className="page-label">{item.sector} · {item.location}</p>
-          <h2>{item.name}</h2>
+          <h2><a href={'#/casos/' + item.slug}>{item.name}</a></h2>
           <p className="case-status">{item.status}</p>
           <p>{item.summary}</p>
           <a className="action-link" href={'#/casos/' + item.slug}>Veure el projecte de {item.name}</a>
@@ -263,8 +261,10 @@ function Footer() {
 export default function App() {
   const [route, setRoute] = useState(readRoute)
   const routeChanged = useRef(false)
-  const { page, section } = route
-  const isProject = caseNavigation.some((item) => item.page === page)
+  const { page, section, target } = route
+  const projectPage = caseNavigation.find((item) => item.page === page)
+  const isProject = Boolean(projectPage)
+  const sectionTitle = projectPage?.sections.find(([id]) => id === section)?.[1]
   useEffect(() => {
     const handleHashChange = () => {
       routeChanged.current = true
@@ -274,15 +274,18 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
   useEffect(() => {
-    document.title = titles[page] + (isProject ? ' · Ceràmica Riu Sec' : '') + ' · Nexe Consultoria ERP'
+    document.title = [sectionTitle, titles[page], isProject && 'Ceràmica Riu Sec', 'Nexe Consultoria ERP'].filter(Boolean).join(' · ')
     const frame = requestAnimationFrame(() => {
-      const target = section && document.getElementById(section)
-      if (target) {
-        const disclosure = target.closest('details')
+      const destination = target && document.getElementById(target)
+      if (destination) {
+        const disclosure = destination.closest('details')
         if (disclosure) disclosure.open = true
-        target.tabIndex = -1
-        target.focus({ preventScroll: true })
-        target.scrollIntoView({ block: 'start' })
+        const heading = destination.querySelector(':scope > h2, :scope > h3') || destination
+        heading.tabIndex = -1
+        heading.focus({ preventScroll: true })
+        const sectionMenu = target === section && document.querySelector('.section-navigation')
+        const scrollTarget = sectionMenu || destination
+        scrollTarget.scrollIntoView({ block: 'start' })
       } else {
         if (routeChanged.current) document.querySelector('main h1')?.focus({ preventScroll: true })
         window.scrollTo(0, 0)
@@ -290,17 +293,16 @@ export default function App() {
       routeChanged.current = false
     })
     return () => cancelAnimationFrame(frame)
-  }, [route, page, section, isProject])
+  }, [route, page, section, sectionTitle, target, isProject])
   const content = <>
     {page === 'inici' && <Home />}
     {page === 'serveis' && <Services />}
     {page === 'casos' && <Cases />}
     {page === 'projecte' && <ProjectOverview />}
-    {page === 'proces' && <ProcessPage />}
-    {page === 'millora' && <ImprovementPage />}
-    {page === 'requisits' && <RequirementsPage />}
-    {page === 'seleccio' && <SelectionPage />}
-    {page === 'documents' && <Documents />}
+    {page === 'proces' && <ProcessPage section={section} />}
+    {page === 'millora' && <ImprovementPage section={section} />}
+    {page === 'requisits' && <RequirementsPage section={section} />}
+    {page === 'seleccio' && <SelectionPage section={section} />}
     {page === 'consultora' && <Consultancy />}
     {page === 'contacte' && <Contact />}
     {page === 'privacitat' && <Privacy />}
@@ -308,6 +310,12 @@ export default function App() {
     {page === 'notfound' && <><PageIntro label="Navegació" title="Pàgina no trobada">Pots tornar a l’inici o consultar els projectes de Nexe.</PageIntro><div className="wrap section-space"><a className="action-link" href="#/">Tornar a l’inici</a><a className="text-link" href={projectBase}>Projecte de Ceràmica Riu Sec</a></div></>}
   </>
   return <><Header page={page} /><main id="main-content">
-    {isProject ? <><ProjectMenu page={page} /><div className="project-body">{content}<ProjectPager page={page} /></div></> : content}
+    {isProject ? <div className="wrap project-shell" data-overview={page === 'projecte'}>
+      <ProjectBreadcrumbs page={page} />
+      <div className="project-layout">
+        {page !== 'projecte' && <ProjectMenu page={page} />}
+        <div className="project-body">{content}<ProjectPager page={page} section={section} /></div>
+      </div>
+    </div> : content}
   </main><Footer /></>
 }

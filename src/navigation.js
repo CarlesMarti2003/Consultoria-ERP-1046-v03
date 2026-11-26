@@ -1,5 +1,5 @@
-import { isProjectPagePublished } from './publication.js'
 export const projectBase = '#/casos/ceramica-riu-sec'
+
 export const mainNavigation = [
   { page: 'inici', label: 'Inici', href: '#/' },
   { page: 'serveis', label: 'Serveis', href: '#/serveis' },
@@ -7,38 +7,91 @@ export const mainNavigation = [
   { page: 'consultora', label: 'Equip', href: '#/consultora' },
   { page: 'contacte', label: 'Contacte', href: '#/contacte' },
 ]
-const projectPages = [
-  { page: 'projecte', label: 'El projecte', href: projectBase, description: 'L’empresa, el repte i l’objectiu.' },
-  { page: 'empresa', label: 'L’empresa', href: projectBase + '/empresa', description: 'Context, organització i situació de Ceràmica Riu Sec.' },
-  { page: 'proces', label: 'Procés actual', href: projectBase + '/proces', description: 'Activitats, diagnòstic i model AS-IS.' },
-  { page: 'analisi', label: 'Problemes detectats', href: projectBase + '/analisi', description: 'Diagnòstic, decisions i conseqüències de cada activitat.' },
-  { page: 'millora', label: 'Proposta de millora', href: projectBase + '/millora', description: 'Millores principals i model TO-BE.' },
-  { page: 'requisits', label: 'Requisits ERP', href: projectBase + '/requisits', description: 'Històries d’usuari i dades necessàries per avaluar l’ERP.' },
-  { page: 'seleccio', label: 'Selecció ERP', href: projectBase + '/seleccio-erp', description: 'Comparativa, anàlisi GAP i parametrització.' },
-  { page: 'documents', label: 'Documents i fonts', href: projectBase + '/documents', description: 'Models BPMN, presentació i referències de consulta.' },
+
+export const projectNavigation = [
+  { page: 'projecte', label: 'Resum del projecte', href: projectBase, sections: [] },
+  {
+    page: 'proces', label: 'Procés actual', href: projectBase + '/proces',
+    description: 'Consulta les huit activitats, els problemes detectats i el model AS-IS.',
+    sections: [
+      ['abast', 'Abast del procés'], ['activitats', 'Activitats'],
+      ['diagnostic', 'Diagnòstic'], ['model-actual', 'Diagrama AS-IS'],
+    ],
+  },
+  {
+    page: 'millora', label: 'Proposta de millora', href: projectBase + '/millora',
+    description: 'Coneix els canvis i com funcionaria el procés amb el model TO-BE.',
+    sections: [
+      ['canvis', 'Categories de millora'], ['recorregut', 'Recorregut proposat'],
+      ['model-proposat', 'Diagrama TO-BE'],
+    ],
+  },
+  {
+    page: 'requisits', label: 'Requisits ERP', href: projectBase + '/requisits',
+    description: 'Revisa les històries d’usuari, les dades i les tasques que ha de cobrir l’ERP.',
+    sections: [
+      ['histories', 'Històries d’usuari'], ['dades', 'Dades diferencials'],
+      ['tasques-erp', 'Cobertura ERP'],
+    ],
+  },
+  {
+    page: 'seleccio', label: 'Selecció ERP', href: projectBase + '/seleccio-erp',
+    description: 'Compara Odoo i Business Central i consulta el GAP i la parametrització.',
+    sections: [
+      ['comparativa', 'Comparativa'], ['gap', 'Anàlisi GAP'],
+      ['parametritzacio', 'Parametrització'],
+    ],
+  },
 ]
-export const projectNavigation = projectPages.filter((page) => !['empresa','analisi'].includes(page.page) && isProjectPagePublished(page.page))
+
 export const legalNavigation = [
   { page: 'privacitat', label: 'Privacitat', href: '#/privacitat' },
   { page: 'cookies', label: 'Cookies', href: '#/cookies' },
 ]
-export const allNavigation = [...mainNavigation, ...projectPages, ...legalNavigation]
-const aliases = { '#/empresa': 'empresa', '#/proces': 'proces', '#/analisi': 'analisi', '#/millora': 'millora', '#/requisits': 'requisits', '#/documents': 'documents', '#/equip': 'consultora' }
+
+const pages = [...mainNavigation, ...projectNavigation, ...legalNavigation]
+const legacyRoutes = {
+  '#/empresa': projectBase,
+  [projectBase + '/empresa']: projectBase,
+  '#/documents': projectBase,
+  [projectBase + '/documents']: projectBase,
+  '#/proces': projectBase + '/proces',
+  '#/analisi': projectBase + '/analisi',
+  '#/millora': projectBase + '/millora',
+  '#/requisits': projectBase + '/requisits',
+  '#/equip': '#/consultora',
+  '#proces': projectBase + '/proces',
+  '#inici': '#/',
+}
+
+export const pageHref = (page) => pages.find((item) => item.page === page)?.href || '#/'
+export const sectionHref = (page, section) => pageHref(page) + '?seccio=' + section
+
 export function readRoute(hash = window.location.hash) {
   const [rawPath, query = ''] = hash.split('?')
   const path = rawPath.replace(/\/$/, '') || '#'
-  const found = allNavigation.find((item) => item.href.replace(/\/$/, '') === path)
+  const canonical = legacyRoutes[path] || path
   const params = new URLSearchParams(query)
-  const page = found?.page || aliases[path] || 'notfound'
-  const view = params.get('vista') || ''
-  let section = params.get('seccio') || view
-  if (page === 'empresa') return { page: 'projecte', section: '' }
-  if (page === 'analisi') return { page: 'proces', section: 'diagnostic' }
-  if (page === 'proces' && section === 'preocupacions') section = 'diagnostic'
-  if (page === 'millora' && section === 'prioritats') section = 'canvis'
-  if (page === 'millora' && section === 'tasques-erp') return isProjectPagePublished('requisits') ? { page: 'requisits', section: 'tasques-erp' } : { page: 'projecte', section: '' }
-  if (page === 'millora' && !['canvis','recorregut','model-proposat'].includes(section)) section = ''
-  if (page === 'proces' && !['abast','model-actual','activitats','diagnostic',...Array.from({length:8},(_,index) => 'activitat-' + (index + 1))].includes(section)) section = ''
-  return isProjectPagePublished(page) ? { page, section } : { page: 'projecte', section: '' }
+  const target = params.get('seccio') || params.get('vista') || ''
+
+  if (canonical === projectBase + '/analisi' || (canonical === pageHref('proces') && target === 'preocupacions')) {
+    return { page: 'proces', section: 'diagnostic', target: 'diagnostic' }
+  }
+  if (canonical === pageHref('millora') && target === 'tasques-erp') {
+    return { page: 'requisits', section: 'tasques-erp', target: 'tasques-erp' }
+  }
+
+  const item = pages.find(({ href }) => href.replace(/\/$/, '') === canonical.replace(/\/$/, ''))
+  const page = item?.page || 'notfound'
+  const sections = item?.sections ?? []
+  const defaultSection = sections[0]?.[0] || ''
+  if (sections.some(([id]) => id === target)) return { page, section: target, target }
+  if (page === 'proces' && /^activitat-[1-8]$/.test(target)) return { page, section: 'activitats', target }
+  if (page === 'requisits' && (/^hu-(0[1-9]|1[01])$/.test(target) || ['planificacio', 'compres', 'recepcio', 'coordinacio'].includes(target))) {
+    return { page, section: 'histories', target }
+  }
+  if (page === 'seleccio' && target === 'avaluacio-fitxers') return { page, section: 'comparativa', target }
+  if (page === 'millora' && target === 'prioritats') return { page, section: 'canvis', target: 'canvis' }
+  if (page === 'projecte' && target === 'abast') return { page, section: '', target }
+  return { page, section: defaultSection, target: '' }
 }
-export const pageHref = (page) => !isProjectPagePublished(page) ? projectBase : page === 'empresa' ? projectBase : page === 'analisi' ? projectBase + '/proces?seccio=diagnostic' : allNavigation.find((item) => item.page === page)?.href || '#/'

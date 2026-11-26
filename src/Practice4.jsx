@@ -2,7 +2,7 @@ import { useId, useRef, useState } from 'react'
 import { steps } from './content.js'
 import { analysis, differentialData, erpTasks, improvementCategories, userStories } from './practice4Content.js'
 import { PageIntro, SectionLinks } from './ProjectUI.jsx'
-import { pageHref } from './navigation.js'
+import { sectionHref } from './navigation.js'
 import { modelUrl } from './modelAssets.js'
 
 const pans = [
@@ -12,7 +12,7 @@ const pans = [
   { label: 'Moure a la dreta', symbol: '→', x: 1, y: 0 },
 ]
 
-function ProcessDiagram({ title, image, caption, textHref, textLabel }) {
+function ProcessDiagram({ title, image, model, caption, textHref, textLabel }) {
   const imageUrl = modelUrl(image.file)
   const id = useId()
   const dialog = useRef(null)
@@ -49,7 +49,11 @@ function ProcessDiagram({ title, image, caption, textHref, textLabel }) {
     <div className="model-links">
       <button type="button" className="action-link" ref={opener} onClick={openDiagram} aria-haspopup="dialog">Obrir el diagrama</button>
       <a className="text-link" href={imageUrl} download>Descarregar PNG</a>
+      <a className="text-link" href={modelUrl(model)} download>Descarregar BPMN editable</a>
       <a className="text-link" href={textHref}>{textLabel}</a>
+    </div>
+    <div className="model-preview">
+      <img src={imageUrl} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
     </div>
     <dialog ref={dialog} className="diagram-dialog" aria-labelledby={id} onClose={() => {
       setOpen(false)
@@ -94,21 +98,25 @@ const currentDecisions = {
   '08': 'Magatzem registra la quantitat acceptada i la ubicació abans d’avisar producció.',
 }
 
-export function ProcessPage() {
-  const processHref = pageHref('proces')
+export function ProcessPage({ section }) {
   return <>
     <PageIntro label="Aprovisionament de matèries primeres" title="El procés actual">Producció, compres, magatzem i qualitat es coordinen amb correus, telefonades i fulls de càlcul separats.</PageIntro>
-    <SectionLinks page="proces" links={[['abast', 'Abast'], ['activitats', 'Activitats'], ['diagnostic', 'Taula d’anàlisi'], ['model-actual', 'Diagrama AS-IS']]} />
-    <section id="abast" className="section-space wrap">
+    <SectionLinks page="proces" section={section} />
+    {section === 'abast' && <section id="abast" className="section-space wrap">
       <h2>Abast del procés</h2>
       <dl className="process-scope-grid">
         <div><dt>Inici</dt><dd>Producció detecta una necessitat d’argila o esmalt en el pla de fabricació.</dd></div>
         <div><dt>Final</dt><dd>El material està disponible. Les diferències de recepció i els lots rebutjats o pendents de qualitat es deriven al tractament corresponent.</dd></div>
         <div><dt>Proveïdors</dt><dd>Reben les comandes, confirmen la data i acompanyen el lliurament amb l’albarà i l’avís corresponent.</dd></div>
       </dl>
-    </section>
-    <section id="activitats" className="section-space wrap">
+    </section>}
+    {section === 'activitats' && <section id="activitats" className="section-space wrap">
       <h2>Les huit activitats</h2>
+      <nav className="activity-jump" aria-label="Anar a una activitat">
+        <ol role="list">{steps.map((step, index) => <li key={step.title}>
+          <a href={sectionHref('proces', 'activitat-' + (index + 1))}>{step.title}</a>
+        </li>)}</ol>
+      </nav>
       <ol className="process-list" role="list">
         {steps.map((step, index) => {
           const item = analysis[index]
@@ -134,25 +142,26 @@ export function ProcessPage() {
           </li>
         })}
       </ol>
-    </section>
-    <section id="diagnostic" className="section-space wrap">
+    </section>}
+    {section === 'diagnostic' && <section id="diagnostic" className="section-space wrap">
       <h2>Taula d’anàlisi i millores</h2>
+      <p className="table-help">Desplaça la taula horitzontalment per veure totes les columnes.</p>
       <div className="table-scroll" role="region" aria-label="Problemes i millores per activitat" tabIndex={0}>
         <table className="work-table">
           <caption>Resum dels problemes detectats i les millores proposades</caption>
           <thead><tr><th scope="col">Activitat</th><th scope="col">Problema</th><th scope="col">Decisió</th><th scope="col">Millora</th><th scope="col">Categories BPR</th></tr></thead>
           <tbody>{analysis.map((item, index) => <tr key={item.id}>
-            <th scope="row"><a href={processHref + '?seccio=activitat-' + (index + 1)}>{item.id} · {item.step}</a></th>
+            <th scope="row"><a href={sectionHref('proces', 'activitat-' + (index + 1))}>{item.id} · {item.step}</a></th>
             <td>{item.problemSummary}</td><td>{currentDecisions[item.id]}</td><td>{item.improvementSummary}</td><td>{item.category.replaceAll('; ', ' · ')}</td>
           </tr>)}</tbody>
         </table>
       </div>
-    </section>
-    <section id="model-actual" className="section-space wrap">
+    </section>}
+    {section === 'model-actual' && <section id="model-actual" className="section-space wrap">
       <ProcessDiagram title="Model AS-IS" caption="Diagrama del recorregut actual, amb els departaments i els intercanvis amb proveïdors."
         image={{ file: 'as-is-diagrama.png', width: 7998, height: 3870, alt: 'Procés d’aprovisionament actual amb els carrils de producció, compres, magatzem i qualitat.' }}
-        textHref={processHref + '?seccio=activitats'} textLabel="Llegir les activitats i decisions" />
-    </section>
+        model="as-is.bpmn" textHref={sectionHref('proces', 'activitats')} textLabel="Llegir les activitats i decisions" />
+    </section>}
   </>
 }
 
@@ -164,27 +173,27 @@ const improvedFlow = [
   ['Registrar el material acceptat', 'Magatzem confirma la quantitat acceptada i la ubicació. L’ERP actualitza les existències una sola vegada i avisa producció.'],
 ]
 
-export function ImprovementPage() {
+export function ImprovementPage({ section }) {
   return <>
     <PageIntro label="Aprovisionament de matèries primeres" title="Proposta de millora">Compartir les dades en un ERP reduiria compres urgents, registres duplicats i errors de coordinació.</PageIntro>
-    <SectionLinks page="millora" links={[['canvis', 'Categories BPR'], ['recorregut', 'Recorregut proposat'], ['model-proposat', 'Diagrama TO-BE']]} />
-    <section id="canvis" className="section-space wrap">
+    <SectionLinks page="millora" section={section} />
+    {section === 'canvis' && <section id="canvis" className="section-space wrap">
       <h2>Les quatre categories de millora</h2>
       <div className="improvement-list">{improvementCategories.map((item) => <article key={item.title}>
         <h3>{item.title}</h3><p>{item.change}</p><p><strong>Justificació.</strong> {item.reason}</p>
       </article>)}</div>
-      <a className="text-link next-link" href={pageHref('proces') + '?seccio=diagnostic'}>Consultar la millora de cada activitat</a>
-    </section>
-    <section id="recorregut" className="section-space wrap">
+      <a className="text-link next-link" href={sectionHref('proces', 'diagnostic')}>Consultar la millora de cada activitat</a>
+    </section>}
+    {section === 'recorregut' && <section id="recorregut" className="section-space wrap">
       <h2>Com funcionaria el procés proposat</h2>
       <ol className="improved-flow">{improvedFlow.map(([title, description]) => <li key={title}><h3>{title}</h3><p>{description}</p></li>)}</ol>
-      <a className="text-link next-link" href={pageHref('requisits') + '?seccio=tasques-erp'}>Veure quines tasques necessiten l’ERP</a>
-    </section>
-    <section id="model-proposat" className="section-space wrap">
+      <a className="text-link next-link" href={sectionHref('requisits', 'tasques-erp')}>Veure quines tasques necessiten l’ERP</a>
+    </section>}
+    {section === 'model-proposat' && <section id="model-proposat" className="section-space wrap">
       <ProcessDiagram title="Model TO-BE" caption="Model BPMN 2.0 de la proposta, pendent d’implantació. Les tasques amb l’etiqueta «ERP» tenen suport del sistema."
         image={{ file: 'to-be-diagrama.png', width: 9000, height: 3918, alt: 'Model TO-BE d’aprovisionament amb producció, compres, magatzem, qualitat, suport ERP i proveïdors.' }}
-        textHref={pageHref('millora') + '?seccio=recorregut'} textLabel="Llegir el recorregut proposat" />
-    </section>
+        model="to-be.bpmn" textHref={sectionHref('millora', 'recorregut')} textLabel="Llegir el recorregut proposat" />
+    </section>}
   </>
 }
 
@@ -196,14 +205,14 @@ const requirementGroups = [
 ]
 
 function StoryReferences({ ids }) {
-  return <span className="reference-links">{ids.map((id) => <a key={id} href={pageHref('requisits') + '?seccio=' + id.toLowerCase()}>{id}</a>)}</span>
+  return <span className="reference-links">{ids.map((id) => <a key={id} href={sectionHref('requisits', id.toLowerCase())}>{id}</a>)}</span>
 }
 
-export function RequirementsPage() {
+export function RequirementsPage({ section }) {
   return <>
     <PageIntro title="Requisits ERP">Històries d’usuari, dades diferencials i cobertura de les tasques del procés proposat.</PageIntro>
-    <SectionLinks page="requisits" links={[['histories', 'Històries d’usuari'], ['dades', 'Dades diferencials'], ['tasques-erp', 'Cobertura ERP']]} />
-    <section id="histories" className="section-space wrap">
+    <SectionLinks page="requisits" section={section} />
+    {section === 'histories' && <section id="histories" className="section-space wrap">
       <h2>Històries d’usuari</h2>
       <p className="requirements-note">Les històries HU-05 i HU-07 descriuen particularitats que cal verificar en els productes avaluats.</p>
       <div className="requirement-groups">{requirementGroups.map((group, index) => <details id={group.id} key={group.id} className="requirement-group" open={index === 0}>
@@ -218,9 +227,10 @@ export function RequirementsPage() {
           </article>
         })}</div>
       </details>)}</div>
-    </section>
-    <section id="dades" className="section-space wrap">
+    </section>}
+    {section === 'dades' && <section id="dades" className="section-space wrap">
       <h2>Dades diferencials</h2>
+      <p className="table-help">Desplaça la taula horitzontalment per veure totes les columnes.</p>
       <div className="table-scroll" role="region" aria-label="Dades diferencials del procés" tabIndex={0}>
         <table className="work-table">
           <caption>Dades específiques de qualitat i de planificació</caption>
@@ -228,10 +238,11 @@ export function RequirementsPage() {
           <tbody>{differentialData.map((item) => <tr key={item.name}><th scope="row">{item.name}<small>{item.fields}</small></th><td><strong>{item.source}.</strong> {item.use}</td><td><StoryReferences ids={item.stories.match(/HU-\d+/g)} /></td></tr>)}</tbody>
         </table>
       </div>
-    </section>
-    <section id="tasques-erp" className="section-space wrap">
+    </section>}
+    {section === 'tasques-erp' && <section id="tasques-erp" className="section-space wrap">
       <h2>Cobertura ERP</h2>
       <p className="requirements-note">Les tasques d’usuari requereixen una entrada o decisió humana. Les tasques de servei automatitzen càlculs, emissions i registres.</p>
+      <p className="table-help">Desplaça la taula horitzontalment per veure totes les columnes.</p>
       <div className="table-scroll" role="region" aria-label="Tasques amb suport ERP" tabIndex={0}>
         <table className="work-table">
           <caption>Relació entre les tasques del TO-BE i les històries d’usuari</caption>
@@ -239,6 +250,6 @@ export function RequirementsPage() {
           <tbody>{erpTasks.map((task) => <tr key={task.id}><th scope="row">{task.step} · {task.label}</th><td>{task.owner}</td><td>{task.kind}</td><td><StoryReferences ids={userStories.filter((story) => story.taskRefs.includes(task.id)).map((story) => story.id)} /></td></tr>)}</tbody>
         </table>
       </div>
-    </section>
+    </section>}
   </>
 }

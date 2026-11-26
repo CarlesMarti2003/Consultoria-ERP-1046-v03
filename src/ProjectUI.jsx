@@ -1,5 +1,4 @@
-import { projectNavigation, pageHref } from './navigation.js'
-import { modelUrl } from './modelAssets.js'
+import { projectNavigation, pageHref, sectionHref } from './navigation.js'
 
 export function PageIntro({ label, title, children }) {
   return <header className="page-intro wrap">
@@ -9,26 +8,60 @@ export function PageIntro({ label, title, children }) {
   </header>
 }
 
-export function SectionLinks({ page, links }) {
-  return <nav className="section-navigation wrap" aria-label="En aquesta pàgina">
-    {links.map(([id, label]) => <a key={id} href={pageHref(page) + '?seccio=' + id}>{label}</a>)}
+export function SectionLinks({ page, section }) {
+  const { sections, label } = projectNavigation.find((item) => item.page === page)
+  return <nav className="section-navigation wrap" aria-label={label + ' · subapartats'}>
+    <ul role="list">{sections.map(([id, title]) =>
+      <li key={id}><a href={sectionHref(page, id)} aria-current={section === id ? 'page' : undefined}>{title}</a></li>
+    )}</ul>
   </nav>
 }
 
-export function ProjectMenu({ page }) {
-  return <div className="project-navigation wrap">
-    <div className="project-context"><a href="#/casos">← Projectes</a><span>Ceràmica Riu Sec</span></div>
-    <nav aria-label="Apartats del projecte">{projectNavigation.map((item) => <a key={item.page} href={item.href} aria-current={page === item.page ? 'page' : undefined}>{item.label}</a>)}</nav>
-  </div>
+export function ProjectBreadcrumbs({ page }) {
+  const item = projectNavigation.find((entry) => entry.page === page)
+  return <nav className="project-breadcrumbs" aria-label="Ubicació">
+    <ol role="list">
+      <li><a href={pageHref('casos')}>Projectes</a></li>
+      <li>{page === 'projecte'
+        ? <span aria-current="page">Ceràmica Riu Sec</span>
+        : <a href={pageHref('projecte')}>Ceràmica Riu Sec</a>}</li>
+      {page !== 'projecte' && <li><span aria-current="page">{item.label}</span></li>}
+    </ol>
+  </nav>
 }
 
-export function ProjectPager({ page }) {
-  const index = projectNavigation.findIndex((item) => item.page === page)
-  const previous = projectNavigation[index - 1]
-  const next = projectNavigation[index + 1]
+const projectGroups = [
+  ['Procés', projectNavigation.slice(1, 3)],
+  ['Solució ERP', projectNavigation.slice(3)],
+]
+
+export function ProjectMenu({ page }) {
+  return <nav className="project-navigation" aria-label="Apartats del projecte">
+    <a className="project-menu-overview" href={pageHref('projecte')}>Resum del projecte</a>
+    <div className="project-menu-groups">
+      {projectGroups.map(([label, entries]) => <div key={label}>
+        <p className="project-menu-label">{label}</p>
+        <ul role="list">{entries.map((item) => <li key={item.page}>
+          <a href={item.href} aria-current={page === item.page ? 'location' : undefined}>{item.label}</a>
+        </li>)}</ul>
+      </div>)}
+    </div>
+  </nav>
+}
+
+const projectSequence = projectNavigation.flatMap(({ page, label, href, sections }) =>
+  sections.length
+    ? sections.map(([id, title]) => ({ page, section: id, title, href: sectionHref(page, id) }))
+    : [{ page, section: '', title: label, href }]
+)
+
+export function ProjectPager({ page, section }) {
+  const index = projectSequence.findIndex((item) => item.page === page && item.section === section)
+  const previous = projectSequence[index - 1]
+  const next = projectSequence[index + 1]
   return <nav className="project-pager wrap" aria-label="Continuar pel projecte">
-    {previous ? <a href={previous.href}><small>← Apartat anterior</small><strong>{previous.label}</strong></a> : <a href="#/casos"><small>← Tornar</small><strong>Projectes</strong></a>}
-    {next ? <a href={next.href}><small>A continuació →</small><strong>{next.label}</strong></a> : <a href={pageHref('projecte')}><small>Tornar al començament →</small><strong>El projecte</strong></a>}
+    <a href={previous?.href || pageHref('casos')}><small>{previous ? 'Anterior' : 'Tornar a'}</small><strong>{previous?.title || 'Projectes'}</strong></a>
+    <a href={next?.href || pageHref('projecte')}><small>{next ? 'Següent' : 'Tornar a'}</small><strong>{next?.title || 'Resum del projecte'}</strong></a>
   </nav>
 }
 
@@ -43,29 +76,18 @@ export function ProjectOverview() {
 
   return <>
     <PageIntro label="Indústria ceràmica · Onda" title={clientLogo}>Fabricant de taulells amb 64 persones. El projecte analitza com coordinar l’aprovisionament de matèries primeres.</PageIntro>
-    <section className="section-space wrap case-brief"><article><h2>El repte</h2><p>Els correus i fulls separats dificulten conéixer l’estoc real i provoquen compres urgents i avisos tardans.</p></article><article><h2>L’objectiu</h2><p>Tindre el material a temps i compartir la informació entre producció, compres, magatzem i qualitat.</p></article><article id="abast"><h2>L’abast</h2><p>De la necessitat de producció al registre del material acceptat. La fabricació i el pagament queden fora.</p></article></section>
+    <section className="section-space wrap">
+      <h2>Explora el projecte</h2>
+      <ul className="project-index" role="list">{projectNavigation.slice(1).map((item) => <li key={item.page}>
+        <h3><a href={item.href}>{item.label}</a></h3>
+        <p>{item.description}</p>
+      </li>)}</ul>
+    </section>
+    <section className="section-space wrap case-brief">
+      <article><h2>El repte</h2><p>Els correus i fulls separats dificulten conéixer l’estoc real i provoquen compres urgents i avisos tardans.</p></article>
+      <article><h2>L’objectiu</h2><p>Tindre el material a temps i compartir la informació entre producció, compres, magatzem i qualitat.</p></article>
+      <article id="abast"><h2>L’abast</h2><p>De la necessitat de producció al registre del material acceptat. La fabricació i el pagament queden fora.</p></article>
+    </section>
     <p className="project-status wrap"><strong>Projecte en curs.</strong> Millores proposades, pendents d’implantació.</p>
-  </>
-}
-
-const downloads = [
-  { title: 'Model del procés actual', detail: 'AS-IS · imatge PNG', file: 'models/as-is-diagrama.png' },
-  { title: 'Model actual editable', detail: 'AS-IS · fitxer BPMN editable', file: 'models/as-is.bpmn' },
-  { title: 'Model del procés proposat', detail: 'TO-BE · fitxer BPMN editable', file: 'models/to-be.bpmn' },
-  { title: 'Presentació del projecte', detail: 'PowerPoint · dues diapositives', file: 'presentacio/Nexe-P4-Ceramica-Riu-Sec.pptx' },
-]
-export function Sources() {
-  return <section id="fonts" className="section-space sources-inline"><div className="wrap"><h2>Fonts de consulta</h2><ul className="source-list">
-    <li><a href="https://www.omg.org/spec/BPMN/2.0/" target="_blank" rel="noopener noreferrer">OMG · BPMN 2.0 ↗</a><p>Notació utilitzada en els models de procés.</p></li>
-    <li><a href="https://tallyfy.com/business-process-improvement-ideas/" target="_blank" rel="noopener noreferrer">Tallyfy · Millora de processos ↗</a><p>Categories que orienten les propostes de millora.</p></li>
-    <li><a href="https://www.atlassian.com/es/agile/project-management/user-stories" target="_blank" rel="noopener noreferrer">Atlassian · Històries d’usuari ↗</a><p>Estructura de les necessitats dels participants.</p></li>
-    <li><a href="https://learn.microsoft.com/en-us/dynamics365/business-central/setup-best-practices-planning-parameters" target="_blank" rel="noopener noreferrer">Microsoft · Paràmetres de planificació ↗</a><p>Referència funcional sobre reserves i reposició. Font consultada en la comparativa de productes.</p></li>
-  </ul></div></section>
-}
-export function Documents() {
-  return <>
-    <PageIntro title="Documents i fonts">Descarrega els models del procés i la presentació per a la posada en comú.</PageIntro>
-    <section id="descarregues" className="section-space"><div className="wrap"><h2 className="plain-section-title">Descarregar fitxers</h2><ul className="download-list">{downloads.map((item) => <li key={item.file}><div><h3>{item.title}</h3><p>{item.detail}</p></div><a href={item.file.startsWith('models/') ? modelUrl(item.file.slice(7)) : import.meta.env.BASE_URL + item.file} download aria-label={'Descarregar: ' + item.title}>Descarregar <span aria-hidden="true">↓</span></a></li>)}</ul><p className="document-help">Pots consultar els models en la web, en «Procés actual» i «Proposta de millora». Els fitxers BPMN també es poden obrir amb bpmn.io o Camunda Modeler.</p></div></section>
-    <Sources />
   </>
 }
