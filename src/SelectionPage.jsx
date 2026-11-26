@@ -4,11 +4,11 @@ import { costTotals, fit, parameters, result, resultRows, scenario, sources, ven
 const score = value => value === null ? 'Pendent' : new Intl.NumberFormat('ca', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)
 const euros = value => new Intl.NumberFormat('ca', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 const files = [
-  ['RFP-Odoo.xlsx', 'RFP d’Odoo', 'Excel editable amb la resposta simulada'],
-  ['RFP-Business-Central.xlsx', 'RFP de Business Central', 'Excel editable amb la resposta simulada'],
-  ['Matriu-avaluacio-ERP.xlsx', 'Matriu d’avaluació ERP', 'Comparativa ponderada amb les sis pestanyes de la plantilla'],
-  ['Matriu-simplificada-ERP.xlsx', 'Matriu simplificada de criteris generals', 'Tres criteris per bloc amb pesos i valoracions'],
-  ['Seleccio-GAP-Ceramica-Riu-Sec.pdf', 'Informe de selecció, GAP i parametrització', 'PDF amb les onze històries, proves i fonts'],
+  ['RFP d’Odoo', 'Resposta simulada de l’empresa implantadora', [['RFP-Odoo.docx', 'Word'], ['RFP-Odoo.pdf', 'PDF']]],
+  ['RFP de Business Central', 'Resposta simulada de l’empresa implantadora', [['RFP-Business-Central.docx', 'Word'], ['RFP-Business-Central.pdf', 'PDF']]],
+  ['Matriu d’avaluació ERP', 'Comparativa ponderada amb els huit criteris tecnològics', [['Matriu-avaluacio-ERP.xlsx', 'Excel']]],
+  ['Matriu simplificada de criteris generals', 'Tres criteris per bloc amb pesos i valoracions', [['Matriu-simplificada-ERP.xlsx', 'Excel']]],
+  ['Informe de selecció, GAP i parametrització', 'Onze històries, proves i fonts', [['Seleccio-GAP-Ceramica-Riu-Sec.pdf', 'PDF']]],
 ]
 
 export function SelectionPage() {
@@ -25,13 +25,13 @@ export function SelectionPage() {
     <section id="comparativa" className="section-space wrap">
       <div className="section-heading-row">
         <h2>Comparativa</h2>
-        <p>Odoo 19 Enterprise Custom destaca en la comparació d’ofertes i el cost simulat. Business Central Premium obté la millor nota tecnològica i també ofereix inspeccions de qualitat.</p>
+        <p>Odoo 19 Enterprise Custom destaca en la comparació d’ofertes i el cost simulat. Els dos ERP obtenen la mateixa nota en els criteris tecnològics valorats.</p>
       </div>
       <dl className="selection-result">
         <div><dt>Odoo</dt><dd>{score(result.odoo)} <span>/ 5</span></dd><dd>{euros(costTotals(vendors.odoo.costs).tco)} a tres anys</dd></div>
         <div><dt>Business Central</dt><dd>{score(result.bc)} <span>/ 5</span></dd><dd>{euros(costTotals(vendors.bc.costs).tco)} a tres anys</dd></div>
       </dl>
-      <p className="selection-note">Escenari de {scenario.users} usuaris sense IVA. La valoració de l’implantador, les ofertes comercials i les proves del pilot estan pendents.</p>
+      <p className="selection-note">Escenari de {scenario.users} usuaris sense IVA. Les notes són provisionals. Queden pendents de valorar el rendiment, l’accessibilitat i l’empresa implantadora.</p>
       <details className="content-disclosure">
         <summary>Valoració per criteri <span aria-hidden="true">+</span></summary>
         <div className="table-scroll" tabIndex="0" role="region" aria-label="Puntuacions dels ERP per criteri">
@@ -61,9 +61,11 @@ export function SelectionPage() {
     </section>
     <section id="avaluacio-fitxers" className="section-space wrap selection-section">
       <h2>Fitxers de l’avaluació</h2>
-      <ul className="download-list">{files.map(([file,title,description]) =>
-        <li key={file}><div><h3>{title}</h3><p>{description}</p></div>
-          <a href={import.meta.env.BASE_URL + 'seleccio-erp/' + file} download aria-label={'Descarregar ' + title}>Descarregar ↓</a>
+      <ul className="download-list">{files.map(([title,description,links]) =>
+        <li key={title}><div><h3>{title}</h3><p>{description}</p></div>
+          <div className="selection-downloads">
+            {links.map(([file,format]) => <a key={file} className="text-link" href={import.meta.env.BASE_URL + 'seleccio-erp/' + file} download aria-label={`Descarregar ${title} en format ${format}`}>{format}</a>)}
+          </div>
         </li>
       )}</ul>
       <details className="content-disclosure">

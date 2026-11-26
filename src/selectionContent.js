@@ -135,9 +135,14 @@ export const groups = [
     ['Opcions de desplegament',3,5,4,'Odoo Custom admet modalitats diferents. La comparació de BC se centra en Online i el desplegament del pilot en sandbox.','O10 B9'],
   ]},
   { id:'tecnologia', name:'Tecnologia', weight:4, sheet:'CriterisTecnològics', rows:[
-    ['API per a integracions',4,4,5,'Odoo ofereix JSON-2 amb Custom. BC disposa d’API v2.0. Cal comprovar els camps que exposa cada entorn.','O9 B10'],
-    ['Identitat i mínim privilegi',5,4,5,'Es proposen perfils per funció en els dos productes. L’entorn Microsoft aporta auditoria i encaix amb el seu ecosistema d’identitat.','O9 B8'],
-    ['Entorn separat per al pilot',4,5,5,'Proves a Odoo.sh o sandbox de BC abans d’implantar.','O10 B9'],
+    ['Base de dades',4,points.SUP,points.SUP,'PostgreSQL en Odoo.sh i tecnologia SQL en Business Central Online.'],
+    ['Llenguatge i extensibilitat',3,points.SUP,points.SUP,'Mòduls Python en Odoo.sh i extensions AL en Business Central.'],
+    ['Infraestructura o núvol',3,points.SUP,points.SUP,'Branca de prova en Odoo.sh i entorn de proves en Business Central.'],
+    ['Connectivitat i API',5,points.SUP,points.SUP,'API JSON-2 en Odoo Custom i API REST v2.0 en Business Central.','O9 B10'],
+    ['Seguretat, xifratge i rols',5,points.MOD,points.MOD,'Cal configurar els permisos i acreditar el xifratge i l’autenticació.','O9 B8'],
+    ['Rendiment i concurrència',4,null,null,'Pendent de la prova amb els deu usuaris del projecte.'],
+    ['Accés multiplataforma',4,points.SUP,points.SUP,'Els dos tenen accés web. Cal validar l’ús en els dispositius de magatzem.'],
+    ['Accessibilitat',2,null,null,'Pendent de provar teclat, contrast i lector de pantalla.'],
   ]},
   { id:'funcional', name:'Cobertura funcional', weight:5, sheet:'Requisits', rows:[] },
   { id:'entrada', name:'Dades d’entrada', weight:3, sheet:'Requisits', rows:[
