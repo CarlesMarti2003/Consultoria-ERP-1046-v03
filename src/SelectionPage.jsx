@@ -5,7 +5,7 @@ import { costTotals, fit, parameters, result, resultRows, scenario, vendors } fr
 const score = value => value === null ? 'Pendent' : new Intl.NumberFormat('ca', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)
 const euros = value => new Intl.NumberFormat('ca', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 const files = [
-  ['RFP d’Odoo', 'Resposta simulada de l’empresa implantadora', [['RFP-Odoo.docx', 'Word'], ['RFP-Odoo.pdf', 'PDF']]],
+  ['RFP d’Odoo', 'Resposta simulada de l’empresa implantadora', [['RFP-Odoo.docx?v=9c5fee27ee87', 'Word'], ['RFP-Odoo.pdf?v=2a7c0fe3d958', 'PDF']]],
   ['RFP de Business Central', 'Resposta simulada de l’empresa implantadora', [['RFP-Business-Central.docx', 'Word'], ['RFP-Business-Central.pdf?v=e81fa8d62ceb', 'PDF']]],
   ['Matriu d’avaluació ERP', 'Comparativa ponderada amb els huit criteris tecnològics', [['Matriu-avaluacio-ERP.xlsx', 'Excel']]],
   ['Matriu simplificada de criteris generals', 'Tres criteris per bloc amb pesos i valoracions', [['Matriu-simplificada-ERP.xlsx', 'Excel']]],
