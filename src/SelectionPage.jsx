@@ -6,7 +6,7 @@ const score = value => value === null ? 'Pendent' : new Intl.NumberFormat('ca', 
 const euros = value => new Intl.NumberFormat('ca', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 const files = [
   ['RFP d’Odoo', 'Resposta simulada de l’empresa implantadora', [['RFP-Odoo.docx', 'Word'], ['RFP-Odoo.pdf', 'PDF']]],
-  ['RFP de Business Central', 'Resposta simulada de l’empresa implantadora', [['RFP-Business-Central.docx', 'Word'], ['RFP-Business-Central.pdf', 'PDF']]],
+  ['RFP de Business Central', 'Resposta simulada de l’empresa implantadora', [['RFP-Business-Central.docx', 'Word'], ['RFP-Business-Central.pdf?v=e81fa8d62ceb', 'PDF']]],
   ['Matriu d’avaluació ERP', 'Comparativa ponderada amb els huit criteris tecnològics', [['Matriu-avaluacio-ERP.xlsx', 'Excel']]],
   ['Matriu simplificada de criteris generals', 'Tres criteris per bloc amb pesos i valoracions', [['Matriu-simplificada-ERP.xlsx', 'Excel']]],
 ]
@@ -57,8 +57,8 @@ export function SelectionPage({ section }) {
         </li>
       )}</ul>
       <p className="selection-note">El dossier detalla la cobertura, les dades i una prova d’acceptació per a cadascuna de les onze històries.</p>
-      <a className="text-link next-link" href={import.meta.env.BASE_URL + 'seleccio-erp/Seleccio-GAP-Ceramica-Riu-Sec.pdf'} download>
-        Descarregar l’informe de selecció, GAP i parametrització (PDF)
+      <a className="text-link next-link" href={import.meta.env.BASE_URL + 'seleccio-erp/Informe-GAP-Ceramica-Riu-Sec.pdf'} download>
+        Descarregar l’informe GAP de Ceràmica Riu Sec (PDF)
       </a>
     </section>}
     {section === 'parametritzacio' && <section id="parametritzacio" className="section-space wrap">
